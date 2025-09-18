@@ -131,9 +131,9 @@
         <h3 class="font-semibold mt-4">History</h3>
         <ul id="historyList" class="mt-2 space-y-2 text-sm"></ul>
 
-        <div class="mt-4 text-right text-xs text-gray-500">
+        <!-- <div class="mt-4 text-right text-xs text-gray-500">
           Data shown are the customized details for this tracking code only.
-        </div>
+        </div> -->
       </div>
     </div>
   </section>
@@ -544,7 +544,7 @@
     } catch (err) {
       console.error(err);
       noResult.classList.remove("hidden");
-      noResult.textContent = "Error looking up shipment. Check console.";
+      noResult.textContent = "Error looking up shipment. Recheck Tracking Code.";
     }
   });
 
