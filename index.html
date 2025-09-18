@@ -3,470 +3,224 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Package Tracking Demo</title>
-
-  <!-- Tailwind Play CDN for quick prototyping -->
+  <title>Post & Logistics - Tailwind Prototype</title>
+  <!-- Tailwind CDN for quick prototype -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Firebase v9 modular SDK (compat is avoided) -->
-  <script type="module">
-    // We will import firebase SDK from inside the JS below
-  </script>
-
-  <style>
-    /* small visual helpers */
-    .chip { @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800; }
-  </style>
 </head>
-<body class="bg-gray-50 text-gray-900 min-h-screen">
+<body class="bg-gray-50 text-gray-800 font-sans">
 
-  <div class="max-w-5xl mx-auto p-6">
+  <!-- NAV -->
+  <header class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-blue-600 rounded-md flex items-center justify-center text-white font-bold">PL</div>
+        <div>
+          <h1 class="text-lg font-semibold">Post & Logistics</h1>
+          <p class="text-xs text-gray-500">Reliable Shipping. Seamless Solutions.</p>
+        </div>
+      </a>
 
-    <h1 class="text-3xl font-bold mb-4">Package Tracking Demo</h1>
+      <nav class="hidden md:flex items-center gap-6 text-sm">
+        <a href="#" class="hover:text-blue-600">Home</a>
+        <div class="group relative">
+          <button class="hover:text-blue-600">Our Services</button>
+          <div class="absolute left-0 mt-2 bg-white rounded shadow-md py-2 w-40 opacity-0 group-hover:opacity-100 transition">
+            <a class="block py-2" href="./air-freight.html">Air Freight</a>
+      <a class="block py-2" href="./road-freight.html">Road Freight</a>
+      <a class="block py-2" href="./sea-freight.html">Sea Freight</a>
+          </div>
+        </div>
+        <a href="./about.html" class="hover:text-blue-600">About Us</a>
+        <a href="./track.html" class="hover:text-blue-600">Track</a>
+        <a href="#" class="hover:text-blue-600">Contact Us</a>
+      </nav>
 
-    <!-- Top nav: Admin gate and search -->
-    <div class="flex gap-4 items-center mb-6">
-      <button id="openAdminBtn" class="bg-blue-600 text-white px-4 py-2 rounded shadow">Open Admin (password)</button>
-      <div class="flex-1">
-        <form id="searchForm" class="flex gap-2">
-          <input id="searchInput" type="text" placeholder="Enter tracking code e.g. OWMB-ABC123" class="flex-1 px-3 py-2 border rounded" required />
-          <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Track</button>
-        </form>
+      <div class="flex items-center gap-3">
+        <a href="#" class="hidden md:inline-block px-4 py-2 bg-blue-600 text-white rounded-md text-sm">Contact Us</a>
+        <button class="md:hidden p-2" id="mobileBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16" />
+          </svg>
+        </button>
       </div>
     </div>
 
-    <!-- Main public section: search results -->
-    <section id="mainSection" class="bg-white p-6 rounded shadow mb-6">
-      <h2 class="text-xl font-semibold mb-3">Tracking Result</h2>
-      <div id="resultArea" class="space-y-4">
-        <p id="noResult" class="text-gray-500">Enter a tracking code and press Track.</p>
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="md:hidden px-6 pb-4 hidden">
+      <a class="block py-2" href="#">Home</a>
+      <a class="block py-2" href="./air-freight.html">Air Freight</a>
+      <a class="block py-2" href="./road-freight.html">Road Freight</a>
+      <a class="block py-2" href="./sea-freight.html">Sea Freight</a>
+      <a class="block py-2" href="./about.html">About Us</a>
+      <a class="block py-2" href="./track.html">Track</a>
+      <a class="block py-2" href="#">Contact</a>
+    </div>
+  </header>
 
-        <div id="trackingCard" class="hidden border rounded p-4">
-          <div class="flex justify-between items-start mb-3">
-            <div>
-              <div class="text-sm text-gray-500">Tracking Code</div>
-              <div id="tkCode" class="text-lg font-bold"></div>
-            </div>
-            <div class="text-right">
-              <div class="text-sm text-gray-500">Status</div>
-              <div id="tkStatus" class="font-medium"></div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <h3 class="font-semibold">Sender</h3>
-              <div id="senderInfo" class="text-sm text-gray-700"></div>
-
-              <h3 class="font-semibold mt-3">Receiver</h3>
-              <div id="receiverInfo" class="text-sm text-gray-700"></div>
-
-              <h3 class="font-semibold mt-3">Package</h3>
-              <div id="packageInfo" class="text-sm text-gray-700"></div>
-            </div>
-
-            <div>
-              <h3 class="font-semibold">Last Known Location</h3>
-              <div id="lastLocation" class="text-sm text-gray-700 mb-3"></div>
-
-              <div id="mapContainer" class="w-full h-48 border rounded overflow-hidden"></div>
-            </div>
-          </div>
-
-          <h3 class="font-semibold mt-4">History</h3>
-          <ul id="historyList" class="mt-2 space-y-2 text-sm"></ul>
-
-          <div class="mt-4 text-right text-xs text-gray-500">Data shown are the customized details for this tracking code only.</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Admin section: hidden until password accepted -->
-    <section id="adminSection" class="hidden bg-white p-6 rounded shadow">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-semibold">Admin Area</h2>
-        <button id="closeAdminBtn" class="text-sm text-red-600">Close Admin</button>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Create shipment -->
-        <div class="border rounded p-4">
-          <h3 class="font-semibold mb-2">Create Shipment</h3>
-          <form id="createForm" class="space-y-2">
-            <div>
-              <label class="text-sm">Sender name</label>
-              <input id="senderName" class="w-full px-2 py-1 border rounded" required />
-            </div>
-            <div>
-              <label class="text-sm">Sender address</label>
-              <input id="senderAddress" class="w-full px-2 py-1 border rounded" required />
-            </div>
-
-            <div>
-              <label class="text-sm">Receiver name</label>
-              <input id="receiverName" class="w-full px-2 py-1 border rounded" required />
-            </div>
-            <div>
-              <label class="text-sm">Receiver address</label>
-              <input id="receiverAddress" class="w-full px-2 py-1 border rounded" required />
-            </div>
-
-            <div>
-              <label class="text-sm">Weight (kg)</label>
-              <input id="weight" type="number" step="0.01" class="w-full px-2 py-1 border rounded" />
-            </div>
-
-            <div>
-              <label class="text-sm">Custom code prefix (optional)</label>
-              <input id="codePrefix" placeholder="e.g. OWMB" class="w-full px-2 py-1 border rounded" />
-              <div class="text-xs text-gray-500 mt-1">If empty a default prefix is used.</div>
-            </div>
-
-            <div>
-              <label class="text-sm">Latitude (optional)</label>
-              <input id="lat" type="number" step="0.000001" class="w-full px-2 py-1 border rounded" />
-            </div>
-            <div>
-              <label class="text-sm">Longitude (optional)</label>
-              <input id="lng" type="number" step="0.000001" class="w-full px-2 py-1 border rounded" />
-            </div>
-
-            <div class="flex gap-2">
-              <button class="bg-blue-600 text-white px-4 py-2 rounded" type="submit">Create Shipment</button>
-              <button id="createClear" type="button" class="px-4 py-2 border rounded">Clear</button>
-            </div>
-          </form>
-
-          <div id="createResult" class="mt-3 text-sm"></div>
+  <!-- HERO -->
+  <main class="max-w-7xl mx-auto px-6 py-12">
+    <div class="grid md:grid-cols-2 gap-10 items-center">
+      <div>
+        <h2 class="text-3xl md:text-4xl font-extrabold mb-4">Efficient Deliveries Every Time</h2>
+        <p class="text-gray-600 mb-6">Looking for swift and dependable delivery? Our courier services ensure your packages arrive safely and on time. Trust us for hassle-free, secure deliveries.</p>
+        <div class="flex gap-3">
+          <a href="#" class="px-5 py-3 bg-blue-600 text-white rounded-md shadow-sm">Contact Us</a>
+          <a href="#" class="px-5 py-3 border border-gray-300 rounded-md">Discover More</a>
         </div>
 
-        <!-- Update or search shipments in admin -->
-        <div class="border rounded p-4">
-          <h3 class="font-semibold mb-2">Update Shipment Status</h3>
-          <form id="updateForm" class="space-y-2">
-            <div>
-              <label class="text-sm">Tracking code</label>
-              <input id="updCode" class="w-full px-2 py-1 border rounded" required />
+        <div class="mt-8 grid grid-cols-2 gap-3">
+          <div class="bg-white p-4 rounded shadow-sm">
+            <h4 class="font-semibold">Fast Delivery</h4>
+            <p class="text-sm text-gray-500">Same-day and urgent deliveries available.</p>
+          </div>
+          <div class="bg-white p-4 rounded shadow-sm">
+            <h4 class="font-semibold">Real Time Tracking</h4>
+            <p class="text-sm text-gray-500">Monitor your shipment from pick-up to delivery.</p>
+          </div>
+          <div class="bg-white p-4 rounded shadow-sm">
+            <h4 class="font-semibold">Timed Deliveries</h4>
+            <p class="text-sm text-gray-500">Schedule deliveries that match your business needs.</p>
+          </div>
+          <div class="bg-white p-4 rounded shadow-sm">
+            <h4 class="font-semibold">Flexible Pricing</h4>
+            <p class="text-sm text-gray-500">Transparent pricing with no hidden fees.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+        <!-- Tracker card -->
+        <div class="bg-white p-6 rounded-lg shadow">
+          <h3 class="font-semibold mb-3">Search or Track Packages</h3>
+          <label class="text-xs text-gray-500">Enter the Consignment No.</label>
+          <div class="mt-3 flex gap-3">
+            <input type="text" placeholder="Ex: 12345" class="flex-1 border border-gray-200 rounded px-4 py-2" />
+            <a href="https://postlogisticstracking.onrender.com/"><button class="px-4 py-2 bg-blue-600 text-white rounded">Track</button></a>
+          </div>
+        </div>
+
+        <!-- Request a quote -->
+        <div class="bg-white p-6 rounded-lg shadow">
+          <h3 class="font-semibold mb-4">Request A Quote</h3>
+          <form class="space-y-3">
+            <div class="grid grid-cols-2 gap-3">
+              <input class="border border-gray-200 rounded px-3 py-2" placeholder="First name" />
+              <input class="border border-gray-200 rounded px-3 py-2" placeholder="Last name" />
             </div>
-            <div>
-              <label class="text-sm">Status</label>
-              <select id="updStatus" class="w-full px-2 py-1 border rounded">
-                <option>Picked up</option>
-                <option>In Transit</option>
-                <option>At Sorting Facility</option>
-                <option>Out for Delivery</option>
-                <option>Delivered</option>
-                <option>Delayed</option>
+            <input class="w-full border border-gray-200 rounded px-3 py-2" placeholder="Phone number" />
+            <input class="w-full border border-gray-200 rounded px-3 py-2" placeholder="Email" />
+            <input class="w-full border border-gray-200 rounded px-3 py-2" placeholder="Pickup location (Address, City, State)" />
+            <input class="w-full border border-gray-200 rounded px-3 py-2" placeholder="Delivery location (Address, City, State)" />
+            <textarea class="w-full border border-gray-200 rounded px-3 py-2" rows="3" placeholder="Description of items being shipped"></textarea>
+
+            <div class="grid grid-cols-3 gap-2">
+              <select class="border border-gray-200 rounded px-2 py-2">
+                <option>Shipping Method</option>
+                <option>Road Freight</option>
+                <option>Air Freight</option>
+                <option>Sea Freight</option>
               </select>
-            </div>
-            <div>
-              <label class="text-sm">Location (text)</label>
-              <input id="updLocation" class="w-full px-2 py-1 border rounded" />
-            </div>
-            <div>
-              <label class="text-sm">Latitude (optional)</label>
-              <input id="updLat" type="" step="0.000001" class="w-full px-2 py-1 border rounded" />
-            </div>
-            <div>
-              <label class="text-sm">Longitude (optional)</label>
-              <input id="updLng" type="" step="0.000001" class="w-full px-2 py-1 border rounded" />
+              <select class="border border-gray-200 rounded px-2 py-2">
+                <option>Urgency</option>
+                <option>7 Days</option>
+                <option>14 Days</option>
+              </select>
+              <input class="border border-gray-200 rounded px-2 py-2" placeholder="Quantity" />
             </div>
 
-            <div class="flex gap-2">
-              <button class="bg-yellow-600 text-white px-4 py-2 rounded" type="submit">Add Status Update</button>
-              <button id="adminFetchBtn" type="button" class="px-4 py-2 border rounded">Load Shipment</button>
+            <div class="flex justify-between items-center">
+              <div class="text-sm text-gray-500">Value of package (for insurance)</div>
+              <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Submit</button>
             </div>
           </form>
+        </div>
 
-          <div id="adminShipmentInfo" class="mt-3 text-sm"></div>
+        <!-- Stats -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg p-6 shadow">
+          <div class="grid grid-cols-3 gap-4 text-center">
+            <div>
+              <div class="text-2xl font-bold">3000+</div>
+              <div class="text-sm">Safe Cargo</div>
+            </div>
+            <div>
+              <div class="text-2xl font-bold">500+</div>
+              <div class="text-sm">Ware Houses</div>
+            </div>
+            <div>
+              <div class="text-2xl font-bold">100+</div>
+              <div class="text-sm">Operating Countries</div>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
 
+    <!-- Services -->
+    <section class="mt-12">
+      <h3 class="text-2xl font-semibold mb-6">Delivering the Best Global Logistics Solutions</h3>
+      <p class="text-gray-600 mb-6">Fast, secure, and reliable courier services locally and globally.</p>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <article class="bg-white p-6 rounded shadow-sm">
+          <h4 class="font-semibold mb-2">Air Freight</h4>
+          <p class="text-sm text-gray-500 mb-4">Fast air shipping with competitive rates and real-time tracking.</p>
+          <a href="/air-freight.html" class="text-blue-600 text-sm">Learn more</a>
+        </article>
+
+        <article class="bg-white p-6 rounded shadow-sm">
+          <h4 class="font-semibold mb-2">Sea Freight</h4>
+          <p class="text-sm text-gray-500 mb-4">Reliable sea cargo with global routes and safe handling.</p>
+          <a href="/sea-freight.html" class="text-blue-600 text-sm">Learn more</a>
+        </article>
+
+        <article class="bg-white p-6 rounded shadow-sm">
+          <h4 class="font-semibold mb-2">Road Freight</h4>
+          <p class="text-sm text-gray-500 mb-4">Efficient regional transport with door to door options.</p>
+          <a href="/road-freight.html" class="text-blue-600 text-sm">Learn more</a>
+        </article>
+      </div>
     </section>
+  </main>
 
-    <footer class="text-sm text-gray-500 mt-6">
-      Demo only. For production, protect admin with Firebase Auth and Firestore security rules.
-    </footer>
+  <!-- FOOTER -->
+  <footer class="bg-white border-t">
+    <div class="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-3 gap-6">
+      <div>
+        <h5 class="font-semibold mb-3">Contact</h5>
+        <p class="text-sm text-gray-600">6 Crown Street, Steinberg WC2B 8FE</p>
+        <p class="text-sm text-gray-600">United States</p>
+        <p class="text-sm text-gray-600">Tel: +1 (562) 5136-268</p>
+        <p class="text-sm text-gray-600">Email: info@postandlogisticsgroups.com</p>
+      </div>
 
-  </div>
+      <div>
+        <h5 class="font-semibold mb-3">Quick Links</h5>
+        <ul class="text-sm text-gray-600 space-y-2">
+          <li><a href="" class="hover:text-blue-600">Home</a></li>
+          <li><a href="./track.html" class="hover:text-blue-600">Track</a></li>
+          <li><a href="#" class="hover:text-blue-600">Contact</a></li>
+        </ul>
+      </div>
 
-  <!-- Firebase and app JS -->
- <script type="module">
-  // ---------- CONFIGURATION ----------
-  const firebaseConfig = {
-    apiKey: "AIzaSyAQTD1ET22_33QUgnqYp_gc6FpNsMa9UUs",
-    authDomain: "track-7d69d.firebaseapp.com",
-    projectId: "track-7d69d",
-    storageBucket: "track-7d69d.firebasestorage.app",
-    messagingSenderId: "317610311429",
-    appId: "1:317610311429:web:4ab38887e746b3c563c16c"
-  };
+      <div>
+        <h5 class="font-semibold mb-3">Working Hours</h5>
+        <p class="text-sm text-gray-600">Mon - Fri: 09:00 am - 09:00 pm</p>
+        <p class="text-sm text-gray-600">Sat - Sun: Closed</p>
+      </div>
+    </div>
 
-  const ADMIN_PASSWORD = "123";
+    <div class="bg-gray-50 border-t">
+      <div class="max-w-7xl mx-auto px-6 py-4 text-sm text-gray-500">© <span id="year"></span> Post & Logistics Groups. All rights reserved.</div>
+    </div>
+  </footer>
 
-  // ---------- IMPORTS ----------
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-  import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-
-  // ---------- INIT FIREBASE ----------
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // Utility: generate a customized tracking code
-  function generateTrackingCode(prefix = "PKG") {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let part = "";
-    for (let i = 0; i < 6; i++) part += chars[Math.floor(Math.random() * chars.length)];
-    return (prefix || "PKG").toUpperCase() + "-" + part;
-  }
-
-  // ---------- DOM ----------
-  const openAdminBtn = document.getElementById("openAdminBtn");
-  const adminSection = document.getElementById("adminSection");
-  const closeAdminBtn = document.getElementById("closeAdminBtn");
-
-  const createForm = document.getElementById("createForm");
-  const createResult = document.getElementById("createResult");
-  const createClear = document.getElementById("createClear");
-
-  const updateForm = document.getElementById("updateForm");
-  const adminFetchBtn = document.getElementById("adminFetchBtn");
-  const adminShipmentInfo = document.getElementById("adminShipmentInfo");
-
-  const searchForm = document.getElementById("searchForm");
-  const searchInput = document.getElementById("searchInput");
-
-  const noResult = document.getElementById("noResult");
-  const trackingCard = document.getElementById("trackingCard");
-  const tkCodeEl = document.getElementById("tkCode");
-  const tkStatusEl = document.getElementById("tkStatus");
-  const senderInfo = document.getElementById("senderInfo");
-  const receiverInfo = document.getElementById("receiverInfo");
-  const packageInfo = document.getElementById("packageInfo");
-  const lastLocation = document.getElementById("lastLocation");
-  const historyList = document.getElementById("historyList");
-  const mapContainer = document.getElementById("mapContainer");
-
-  // ---------- Admin gate ----------
-  openAdminBtn.addEventListener("click", () => {
-    const pw = prompt("Enter admin password:");
-    if (pw === ADMIN_PASSWORD) {
-      adminSection.classList.remove("hidden");
-      window.scrollTo({ top: adminSection.offsetTop, behavior: "smooth" });
-    } else {
-      alert("Wrong password.");
-    }
-  });
-
-  closeAdminBtn.addEventListener("click", () => {
-    adminSection.classList.add("hidden");
-  });
-
-  // ---------- Create shipment ----------
-  createForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    createResult.textContent = "";
-
-    const sender_name = document.getElementById("senderName").value.trim();
-    const sender_address = document.getElementById("senderAddress").value.trim();
-    const receiver_name = document.getElementById("receiverName").value.trim();
-    const receiver_address = document.getElementById("receiverAddress").value.trim();
-    const weightVal = document.getElementById("weight").value;
-    const prefix = document.getElementById("codePrefix").value.trim() || "PKG";
-    const lat = document.getElementById("lat").value;
-    const lng = document.getElementById("lng").value;
-
-    // generate unique tracking code
-    let trackingCode;
-    for (let attempts = 0; attempts < 5; attempts++) {
-      trackingCode = generateTrackingCode(prefix);
-      const docRef = doc(db, "shipments", trackingCode);
-      const snap = await getDoc(docRef);
-      if (!snap.exists()) break;
-      trackingCode = null;
-    }
-    if (!trackingCode) {
-      createResult.textContent = "Could not generate unique code. Try again.";
-      return;
-    }
-
-    // First create with a null timestamp in history
-    const baseData = {
-      trackingCode,
-      sender: { name: sender_name, address: sender_address },
-      receiver: { name: receiver_name, address: receiver_address },
-      package: { weight: weightVal || null },
-      currentStatus: "Created",
-      currentLocation: (lat && lng) ? { lat: parseFloat(lat), lng: parseFloat(lng), text: "" } : null,
-      history: [
-        {
-          status: "Created",
-          location: (lat && lng) ? `${lat}, ${lng}` : "Unknown",
-          lat: lat ? parseFloat(lat) : null,
-          lng: lng ? parseFloat(lng) : null,
-          timestamp: null,
-          note: "Shipment created"
-        }
-      ],
-      createdAt: serverTimestamp()
-    };
-
-    try {
-      const docRef = doc(db, "shipments", trackingCode);
-      await setDoc(docRef, baseData);
-
-      // Immediately update to insert the serverTimestamp correctly
-      await updateDoc(docRef, {
-        "history.0.timestamp": serverTimestamp()
-      });
-
-      createResult.innerHTML = `Shipment created. Tracking code: <strong>${trackingCode}</strong>`;
-      createForm.reset();
-    } catch (err) {
-      console.error(err);
-      createResult.textContent = "Error creating shipment. Check console.";
-    }
-  });
-
-  createClear.addEventListener("click", () => createForm.reset());
-
-  // ---------- Admin: fetch shipment ----------
-  adminFetchBtn.addEventListener("click", async () => {
-    const code = document.getElementById("updCode").value.trim().toUpperCase();
-    if (!code) return alert("Enter tracking code");
-    adminShipmentInfo.textContent = "Loading...";
-    try {
-      const snap = await getDoc(doc(db, "shipments", code));
-      if (!snap.exists()) {
-        adminShipmentInfo.textContent = "Shipment not found.";
-        return;
-      }
-      const data = snap.data();
-      adminShipmentInfo.innerHTML = `
-        <div><strong>${data.trackingCode}</strong> — ${data.currentStatus}</div>
-        <div class="mt-2 text-sm">Sender: ${data.sender.name}, ${data.sender.address}</div>
-        <div class="text-sm">Receiver: ${data.receiver.name}, ${data.receiver.address}</div>
-        <div class="text-sm mt-2">Last updated: ${data.history?.length ? new Date(data.history[data.history.length-1].timestamp?.seconds*1000 || Date.now()).toLocaleString() : 'n/a'}</div>
-      `;
-    } catch (err) {
-      console.error(err);
-      adminShipmentInfo.textContent = "Error loading shipment. Check console.";
-    }
-  });
-
-  // ---------- Admin: update status ----------
-  updateForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const code = document.getElementById("updCode").value.trim().toUpperCase();
-    const status = document.getElementById("updStatus").value;
-    const locText = document.getElementById("updLocation").value.trim();
-    const lat = document.getElementById("updLat").value;
-    const lng = document.getElementById("updLng").value;
-
-    if (!code) return alert("Enter tracking code.");
-
-    const historyEntry = {
-      status,
-      location: locText || ((lat && lng) ? `${lat}, ${lng}` : "Unknown"),
-      lat: lat ? parseFloat(lat) : null,
-      lng: lng ? parseFloat(lng) : null,
-      timestamp: Date.now(),
-      note: ""
-    };
-
-    const docRef = doc(db, "shipments", code);
-    try {
-      const updates = {
-        currentStatus: status,
-        history: arrayUnion(historyEntry)
-      };
-      if (lat && lng) {
-        updates.currentLocation = { lat: parseFloat(lat), lng: parseFloat(lng), text: locText };
-      } else if (locText) {
-        updates.currentLocation = { text: locText };
-      }
-      await updateDoc(docRef, updates);
-      adminShipmentInfo.textContent = "Status update saved.";
-      updateForm.reset();
-    } catch (err) {
-      console.error(err);
-      adminShipmentInfo.textContent = "Error saving update. Check console.";
-    }
-  });
-
-  // ---------- Public: search and render ----------
-  searchForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const code = searchInput.value.trim().toUpperCase();
-    if (!code) return;
-    noResult.classList.add("hidden");
-    trackingCard.classList.add("hidden");
-    historyList.innerHTML = "";
-    mapContainer.innerHTML = "";
-
-    try {
-      const snap = await getDoc(doc(db, "shipments", code));
-      if (!snap.exists()) {
-        noResult.classList.remove("hidden");
-        noResult.textContent = "No shipment found with that tracking code.";
-        return;
-      }
-      const data = snap.data();
-
-      tkCodeEl.textContent = data.trackingCode || code;
-      tkStatusEl.textContent = data.currentStatus || "Unknown";
-
-      senderInfo.innerHTML = `<div class="font-medium">${escapeHtml(data.sender?.name || "")}</div><div class="text-xs">${escapeHtml(data.sender?.address || "")}</div>`;
-      receiverInfo.innerHTML = `<div class="font-medium">${escapeHtml(data.receiver?.name || "")}</div><div class="text-xs">${escapeHtml(data.receiver?.address || "")}</div>`;
-      packageInfo.innerHTML = `Weight: ${data.package?.weight ?? "N/A"}`;
-
-      const hist = Array.isArray(data.history) ? data.history : [];
-historyList.innerHTML = hist.slice().reverse().map(h => {
-  const time = h.timestamp?.seconds ? new Date(h.timestamp.seconds * 1000).toLocaleString() : "Recent";
-  const loc = h.location || (h.lat && h.lng ? `${h.lat}, ${h.lng}` : "Unknown");
-  return `<li class="p-2 border rounded">
-    ${time} 
-    <div class="text-sm font-medium">${escapeHtml(h.status)}</div>
-    <div class="text-xs text-gray-600">${escapeHtml(loc)}${h.note ? " — " + escapeHtml(h.note) : ""}</div>
-  </li>`;
-}).join("");
-
-
-      if (data.currentLocation) {
-        lastLocation.textContent = data.currentLocation.text ? data.currentLocation.text : (data.currentLocation.lat && data.currentLocation.lng ? `${data.currentLocation.lat}, ${data.currentLocation.lng}` : "Unknown");
-      } else {
-        lastLocation.textContent = "Unknown";
-      }
-
-      if (data.currentLocation && data.currentLocation.lat && data.currentLocation.lng) {
-        const lat = data.currentLocation.lat;
-        const lng = data.currentLocation.lng;
-        const zoom = 12;
-        const mapHTML = `<iframe width="100%" height="100%" frameborder="0" src="https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.05}%2C${lat-0.03}%2C${lng+0.05}%2C${lat+0.03}&layer=mapnik&marker=${lat}%2C${lng}" style="min-height:200px;"></iframe>
-          <div class="text-xs text-gray-500 mt-1">Map shows last reported coordinates.</div>`;
-        mapContainer.innerHTML = mapHTML;
-      } else {
-        mapContainer.innerHTML = '<div class="text-sm text-gray-500 p-2">No coordinates available for map display.</div>';
-      }
-
-      trackingCard.classList.remove("hidden");
-
-    } catch (err) {
-      console.error(err);
-      noResult.classList.remove("hidden");
-      noResult.textContent = "Error looking up shipment. Check console.";
-    }
-  });
-
-  function escapeHtml(text) {
-    if (!text && text !== 0) return "";
-    return String(text).replace(/[&<>"']/g, function (m) {
-      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
+  <script>
+    // small UI interactions
+    document.getElementById('mobileBtn').addEventListener('click', function () {
+      const m = document.getElementById('mobileMenu');
+      m.classList.toggle('hidden');
     });
-  }
-
-  console.log("Tracking demo loaded. Replace Firebase config and secure admin for production.");
-</script>
-
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>

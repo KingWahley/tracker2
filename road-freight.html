@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Road Freight | Post & Logistics</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+  <!-- NAV -->
+  <header class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-blue-600 rounded-md flex items-center justify-center text-white font-bold">PL</div>
+        <div>
+          <h1 class="text-lg font-semibold">Post & Logistics</h1>
+          <p class="text-xs text-gray-500">Reliable Shipping. Seamless Solutions.</p>
+        </div>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-6 text-sm">
+        <a href="index.html" class="hover:text-blue-600">Home</a>
+        <a href="air-freight.html" class="hover:text-blue-600">Air Freight</a>
+        <a href="sea-freight.html" class="hover:text-blue-600">Sea Freight</a>
+        <a href="road-freight.html" class="text-blue-600 font-semibold">Road Freight</a>
+        <a href="./about.html" class="hover:text-blue-600">About Us</a>
+        <a href="./track.html" class="hover:text-blue-600">Track</a>
+        <a href="contact.html" class="hover:text-blue-600">Contact</a>
+      </nav>
+    </div>
+
+    <button class="md:hidden p-2" id="mobileBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16" />
+          </svg>
+        </button>
+
+    <div id="mobileMenu" class="md:hidden px-6 pb-4 hidden">
+      <a class="block py-2" href="./index.html">Home</a>
+      <a class="block py-2" href="./air-freight.html">Air Freight</a>
+      <a class="block py-2" href="./road-freight.html">Road Freight</a>
+      <a class="block py-2" href="./sea-freight.html">Sea Freight</a>
+      <a class="block py-2" href="./about.html">About Us</a>
+      <a class="block py-2" href="./track.html">Track</a>
+      <a class="block py-2" href="#">Contact</a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="relative bg-blue-600 text-white">
+    <div class="max-w-7xl mx-auto px-6 py-20 text-center">
+      <h2 class="text-4xl md:text-5xl font-extrabold mb-4">Road Freight Services</h2>
+      <p class="text-lg max-w-2xl mx-auto">Flexible, fast, and reliable trucking solutions for domestic and regional cargo movement.</p>
+    </div>
+  </section>
+
+  <!-- INTRO -->
+  <section class="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-2 gap-10 items-center">
+    <div>
+      <h3 class="text-2xl font-semibold mb-4">Why Choose Road Freight?</h3>
+      <p class="text-gray-600 mb-6">
+        From local deliveries to long-haul transportation, our road freight service provides cost-effective and dependable logistics for all types of cargo. With a modern fleet and experienced drivers, we ensure your goods arrive on time and in perfect condition.
+      </p>
+      <ul class="space-y-3">
+        <li class="flex items-center gap-2"><span class="w-3 h-3 bg-blue-600 rounded-full"></span> Door-to-door delivery</li>
+        <li class="flex items-center gap-2"><span class="w-3 h-3 bg-blue-600 rounded-full"></span> Domestic and cross-border coverage</li>
+        <li class="flex items-center gap-2"><span class="w-3 h-3 bg-blue-600 rounded-full"></span> Flexible fleet for all cargo sizes</li>
+        <li class="flex items-center gap-2"><span class="w-3 h-3 bg-blue-600 rounded-full"></span> Real-time tracking</li>
+      </ul>
+    </div>
+    <div class="rounded-lg overflow-hidden shadow-lg">
+      <img src="https://media.licdn.com/dms/image/v2/D4E12AQEfNWNSinp_Gg/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1696979503695?e=2147483647&v=beta&t=Ak_swilFacu44TspUIzGeFA_E2P_iSRYAft_7PCUuy4" alt="Road Freight" class="w-full h-full object-cover">
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="bg-blue-600 text-white py-16">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <h3 class="text-3xl font-semibold mb-4">Need Road Transport?</h3>
+      <p class="mb-6 max-w-2xl mx-auto">We deliver across regions with speed and reliability. Get in touch today for a customized trucking solution that fits your needs.</p>
+      <a href="contact.html" class="px-6 py-3 bg-white text-blue-600 rounded-md font-semibold shadow">Request a Quote</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t">
+    <div class="max-w-7xl mx-auto px-6 py-10 text-sm text-gray-600">
+      © <span id="year"></span> Post & Logistics Groups. All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+      // small UI interactions
+    document.getElementById('mobileBtn').addEventListener('click', function () {
+      const m = document.getElementById('mobileMenu');
+      m.classList.toggle('hidden');
+    });
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
